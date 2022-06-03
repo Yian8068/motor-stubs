@@ -1,3 +1,5 @@
-from motor import core
+from typing import TypeVar
 
-AsyncIOMotorCollection: core.AgnosticCollection
+T = TypeVar('T')
+
+def create_asyncio_class(cls: T) -> T: ...
