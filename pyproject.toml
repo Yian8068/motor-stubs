@@ -4,10 +4,10 @@ version = "0.2.1"
 description = ""
 authors = ["Daniel Hsiao <yian8068@yahoo.com.tw>"]
 packages = [
-    { include = "src" }
+    { include = "motor-stubs" }
 ]
 include = [
-    "src/**/*.pyi"
+    "motor-stubs/**/*.pyi"
 ]
 
 [tool.poetry.dependencies]
