@@ -20,7 +20,7 @@ with open('README.md') as f:
     readme = f.read()
 
 setup_kwargs = {
-    'name': 'motor-stubs-test',
+    'name': 'motor-stubs',
     'version': '0.6.0',
     'description': '',
     'long_description': readme,
