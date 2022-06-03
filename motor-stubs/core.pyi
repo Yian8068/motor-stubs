@@ -19,7 +19,7 @@ from pymongo.client_session import ClientSession
 from pymongo.collection import Collection
 from pymongo.change_stream import CollectionChangeStream
 from pymongo.command_cursor import CommandCursor
-from pymongo.cursor import Cursor, RawBatchCursor
+from pymongo.cursor import RawBatchCursor
 from pymongo.database import Database
 from pymongo.operations import (
     DeleteMany,
@@ -55,8 +55,9 @@ T = TypeVar('T')
 class AgnosticBase(object):
     def __init__(self, delegate: T) -> T: ...
 
-class AgnosticBaseProperties(AgnosticBase):
-    pass
+class AgnosticBaseProperties(AgnosticBase): ...
+class AgnosticBaseCursor(AgnosticBase): ...
+class AgnosticCursor(AgnosticBaseCursor): ...
 
 class AgnosticCollection:
     async def bulk_write(
@@ -237,7 +238,7 @@ class AgnosticCollection:
     async def list_indexes(
         self, session: Optional["ClientSession"] = None, comment: Optional[Any] = None
     ) -> CommandCursor[MutableMapping[str, Any]]: ...
-    def find(self, *args: Any, **kwargs: Any) -> Cursor[_DocumentType]: ...
+    def find(self, *args: Any, **kwargs: Any) -> AgnosticCursor[_DocumentType]: ...
     def find_raw_batches(self, *args: Any, **kwargs: Any) -> RawBatchCursor[_DocumentType]: ...
     def watch(
         self,
