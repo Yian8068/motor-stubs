@@ -1,3 +1,9 @@
+## 0.6.0 (2022-06-04)
+
+### Feat
+
+- AsyncIOMotorCollection pyi
+
 ## 0.5.0 (2022-06-03)
 
 ### Feat
