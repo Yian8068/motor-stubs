@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "motor_stubs_test"
+name = "motor-stubs-test"
 version = "0.2.0"
 description = ""
 authors = ["Daniel Hsiao <yian8068@yahoo.com.tw>"]
