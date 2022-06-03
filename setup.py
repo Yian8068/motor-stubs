@@ -21,7 +21,7 @@ with open('README.md') as f:
 
 setup_kwargs = {
     'name': 'motor-stubs-test',
-    'version': '0.4.1',
+    'version': '0.5.0',
     'description': '',
     'long_description': readme,
     'author': 'Daniel Hsiao',
