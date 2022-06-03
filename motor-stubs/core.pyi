@@ -14,9 +14,12 @@ from typing import (
 
 from bson.codec_options import CodecOptions
 from bson.dbref import DBRef
+from bson.timestamp import Timestamp
 from pymongo.client_session import ClientSession
 from pymongo.collection import Collection
+from pymongo.change_stream import CollectionChangeStream
 from pymongo.command_cursor import CommandCursor
+from pymongo.cursor import Cursor, RawBatchCursor
 from pymongo.database import Database
 from pymongo.operations import (
     DeleteMany,
@@ -220,6 +223,35 @@ class AgnosticCollection:
         write_concern: Optional[WriteConcern] = None,
         read_concern: Optional["ReadConcern"] = None,
     ) -> "Collection[_DocumentType]": ...
+    async def aggregate(
+        self,
+        pipeline: Sequence[Mapping[str, Any]],
+        session: Optional["ClientSession"] = None,
+        let: Optional[Mapping[str, Any]] = None,
+        comment: Optional[Any] = None,
+        **kwargs: Any,
+    ) -> CommandCursor[_DocumentType]: ...
+    async def aggregate_raw_batches(
+        self, pipeline: Sequence[Mapping[str, Any]], session: Optional["ClientSession"] = None, comment: Optional[Any] = None, **kwargs: Any
+    ) -> RawBatchCursor[_DocumentType]: ...
+    async def list_indexes(
+        self, session: Optional["ClientSession"] = None, comment: Optional[Any] = None
+    ) -> CommandCursor[MutableMapping[str, Any]]: ...
+    def find(self, *args: Any, **kwargs: Any) -> Cursor[_DocumentType]: ...
+    def find_raw_batches(self, *args: Any, **kwargs: Any) -> RawBatchCursor[_DocumentType]: ...
+    def watch(
+        self,
+        pipeline: Optional[Sequence[Mapping[str, Any]]] = None,
+        full_document: Optional[str] = None,
+        resume_after: Optional[Mapping[str, Any]] = None,
+        max_await_time_ms: Optional[int] = None,
+        batch_size: Optional[int] = None,
+        collation: Optional[_CollationIn] = None,
+        start_at_operation_time: Optional[Timestamp] = None,
+        session: Optional["ClientSession"] = None,
+        start_after: Optional[Mapping[str, Any]] = None,
+        comment: Optional[Any] = None,
+    ) -> CollectionChangeStream[_DocumentType]: ...
 
 class AgnosticDatabase:
     async def command(

@@ -1,4 +1,5 @@
 import inspect
+from pathlib import Path
 from typing import Any
 
 from motor import metaprogramming  # noqa
@@ -85,12 +86,24 @@ _CodecDocumentType = TypeVar("_CodecDocumentType", bound=Mapping[str, Any])
 """
 
 
+PYI_TMP_DIR = 'pyi_tmp'
+
+
+def mkdir_pyi_tmp() -> str:
+    target_path = Path.cwd() / PYI_TMP_DIR
+    target_path.mkdir(parents=True, exist_ok=True)
+    return target_path.as_posix()
+
+
 def gen(motor_cls):
+    target_path = mkdir_pyi_tmp()
     cls = motor_cls.__delegate_class__
     cls_members: list[tuple[str, Any]] = inspect.getmembers(cls)
     cls_dict = {name: attr for name, attr in cls_members}
-    filename = f'{cls.__name__.lower()}.pyi'
+    filename = f'{target_path}/{cls.__name__.lower()}.pyi'
     has_file = False
+    maybe_manually_add_members = []
+    added_member = {}
     for base in reversed(inspect.getmro(motor_cls)):
         if base.__name__ != motor_cls.__name__:
             continue
@@ -104,35 +117,43 @@ def gen(motor_cls):
 
         for name, attr in base.__dict__.items():
             if name.startswith('__'):
+                maybe_manually_add_members.append((name, attr))
+                continue
+            async_prefix = '_async_'
+            name = name.replace(async_prefix, '') if name.startswith(async_prefix) else name
+            original_item = cls_dict.get(name)
+            if not original_item:
+                maybe_manually_add_members.append((name, attr))
+                # print(name, 'not found')
+                continue
+            if isinstance(original_item, property):
+                maybe_manually_add_members.append((name, attr))
+                # print(name, 'is property')
+                continue
+            if name in added_member:
+                print('pass added member:', name)
                 continue
             sig = None
-            if isinstance(attr, metaprogramming.MotorAttributeFactory):
-                is_async_method = isinstance(attr, metaprogramming.Async)
-                # print(name, attr)
-                original_item = cls_dict.get(name)
-                if not original_item:
-                    # print(name, 'not found')
-                    continue
-                if isinstance(original_item, property):
-                    # print(name, 'is property')
-                    continue
-                try:
-                    sig = inspect.signature(original_item)
-                    with open(filename, mode='a+') as f:
-                        f.write('\tasync ' if is_async_method else '\t')
-                        f.write(f'def {name}(' + ', '.join([str(v) for v in sig.parameters.values()]) + ')')
-                        f.write('->')
-                        f.write(str(sig.return_annotation) if not inspect.isclass(sig.return_annotation) else sig.return_annotation.__name__)
-                        f.write(':')
-                        f.write('\n')
-                        f.writelines(['\t\t...'])
-                        f.write('\n')
-                        f.write('\n')
-                except Exception as ex:
-                    print(ex)
-                    print('error', name)
+            is_async_method = isinstance(attr, metaprogramming.Async)
+            # print(name, attr)
+            sig = inspect.signature(original_item)
+            with open(filename, mode='a+') as f:
+                f.write('\tasync ' if is_async_method else '\t')
+                f.write(f'def {name}(' + ', '.join([str(v) for v in sig.parameters.values()]) + ')')
+                f.write('->')
+                f.write(str(sig.return_annotation) if not inspect.isclass(sig.return_annotation) else sig.return_annotation.__name__)
+                f.write(': ...')
+                f.write('\n')
+                f.write('\n')
+            added_member[name] = True
     if has_file:
         replacement(filename)
+
+    if maybe_manually_add_members:
+        with open(filename, mode='a+') as f:
+            f.write('\t# maybe manually add following func(s)\n')
+            for name, attr in maybe_manually_add_members:
+                f.write(f'\t# def {name}(self, ...): ...\n')
 
 
 def replacement(filename):
@@ -146,10 +167,14 @@ def replacement(filename):
         'typing.Dict': 'Dict',
         'bson.dbref.DBRef': 'DBRef',
         'bson.codec_options.CodecOptions': 'CodecOptions',
+        'bson.timestamp.Timestamp': 'Timestamp',
         'pymongo.read_preferences._ServerMode': '_ServerMode',
         'pymongo.write_concern.WriteConcern': 'WriteConcern',
         'pymongo.collection.Collection': 'Collection',
-        'pymongo.command_cursor.CommandCursor[Dict[str, Any]]': 'CommandCursor[Dict[str, Any]]',
+        'pymongo.cursor.Cursor[~_DocumentType]': 'Cursor[_DocumentType]',
+        'pymongo.command_cursor.CommandCursor': 'CommandCursor',
+        'pymongo.cursor.RawBatchCursor[~_DocumentType]': 'RawBatchCursor[_DocumentType]',
+        'pymongo.change_stream.CollectionChangeStream': 'CollectionChangeStream',
         "ForwardRef('ClientSession')": '"ClientSession"',
         "ForwardRef('ReadConcern')": '"ReadConcern"',
         "ForwardRef('WriteConcern')": '"WriteConcern"',
