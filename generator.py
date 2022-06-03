@@ -19,6 +19,8 @@ from typing import (
     Sequence,
     Tuple,
     Union,
+    Dict,
+    TypeVar,
 )
 
 from bson.codec_options import CodecOptions
@@ -62,7 +64,15 @@ from pymongo.results import (
     UpdateResult,
 )
 from pymongo.typings import _CollationIn, _DocumentIn, _DocumentType, _Pipeline
+from pymongo.client_session import ClientSession
+from pymongo.mongo_client import MongoClient
+from pymongo.read_concern import ReadConcern
 from pymongo.write_concern import WriteConcern
+
+from pymongo.collection import Collection
+from pymongo.database import Database
+from bson.dbref import DBRef
+from bson.son import SON
 
 _FIND_AND_MODIFY_DOC_FIELDS = {"value": 1}
 
@@ -71,6 +81,7 @@ _WriteOp = Union[InsertOne, DeleteOne, DeleteMany, ReplaceOne, UpdateOne, Update
 # Hint supports index name, "myIndex", or list of index pairs: [('x', 1), ('y', -1)]
 _IndexList = Sequence[Tuple[str, Union[int, str, Mapping[str, Any]]]]
 _IndexKeyHint = Union[str, _IndexList]
+_CodecDocumentType = TypeVar("_CodecDocumentType", bound=Mapping[str, Any])
 """
 
 
@@ -132,11 +143,17 @@ def replacement(filename):
         'typing.Optional': 'Optional',
         'typing.Any': 'Any',
         'typing.MutableMapping': 'MutableMapping',
-        "ForwardRef('ClientSession')": 'Optional["ClientSession"]',
+        'typing.Dict': 'Dict',
+        'bson.dbref.DBRef': 'DBRef',
         'bson.codec_options.CodecOptions': 'CodecOptions',
         'pymongo.read_preferences._ServerMode': '_ServerMode',
         'pymongo.write_concern.WriteConcern': 'WriteConcern',
+        'pymongo.collection.Collection': 'Collection',
+        'pymongo.command_cursor.CommandCursor[Dict[str, Any]]': 'CommandCursor[Dict[str, Any]]',
+        "ForwardRef('ClientSession')": '"ClientSession"',
         "ForwardRef('ReadConcern')": '"ReadConcern"',
+        "ForwardRef('WriteConcern')": '"WriteConcern"',
+        'Database[_DocumentType]': '"Database[_DocumentType]"',
         'Collection[_DocumentType]': '"Collection[_DocumentType]"',
         'Sequence[Union[pymongo.operations.InsertOne, pymongo.operations.DeleteOne, pymongo.operations.DeleteMany, pymongo.operations.ReplaceOne, pymongo.operations.UpdateOne, pymongo.operations.UpdateMany]]': 'Sequence[_WriteOp]',
         'Sequence[pymongo.operations.IndexModel]': 'IndexModel',
@@ -145,6 +162,9 @@ def replacement(filename):
         "Union[MutableMapping[str, Any], ForwardRef('RawBSONDocument')]": '_DocumentIn',
         'Union[Mapping[str, Any], Sequence[Mapping[str, Any]]]': 'Union[Mapping[str, Any], _Pipeline]',
         'Union[Mapping[str, Any], Iterable[str], NoneType]': 'Optional[Union[Mapping[str, Any], Iterable[str]]]',
+        'Union[str, pymongo.collection.Collection]': 'Union[str, Collection]',
+        '~_DocumentType': '_DocumentType',
+        '~_CodecDocumentType': '_CodecDocumentType',
     }
     for ori_txt, new_txt in transform_target.items():
         text = text.replace(ori_txt, new_txt)
