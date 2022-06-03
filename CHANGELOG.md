@@ -1,3 +1,9 @@
+## 0.3.0 (2022-06-03)
+
+### Feat
+
+- create_asyncio_class stub
+
 ## 0.2.2 (2022-06-03)
 
 ### Fix
