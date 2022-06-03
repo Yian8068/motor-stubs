@@ -1,3 +1,9 @@
+## 1.1.0 (2022-06-04)
+
+### Feat
+
+- replace pymongo Cursor to AgnosticCursor
+
 ## 1.0.1 (2022-06-04)
 
 ### Fix
