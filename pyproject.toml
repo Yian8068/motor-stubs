@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "motor_stubs_test"
+version = "0.1.0"
+description = ""
+authors = ["Daniel Hsiao <yian8068@yahoo.com.tw>"]
+packages = [
+    { include = "src" }
+]
+include = [
+    "src/**/*.pyi"
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.19.0"
+motor = "^3.0.0"
+
+[tool.commitizen]
+version = "0.1.0"
+version_files = [
+    "pyproject.toml:version",
+    "setup.py:version"
+]
+update_changelog_on_bump = true
+
+[tool.black]
+line_length = 150
+target_version = ["py39"]
+
+[tool.isort]
+profile = "black"
+line_length = 130
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

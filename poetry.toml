@@ -1,0 +1,4 @@
+[virtualenvs]
+# This config will let poetry auto build virtualenv in project
+# and create a .venv folder to install required package from proetry.toml.
+in-project = true
