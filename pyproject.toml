@@ -14,7 +14,8 @@ include = [
 repository = "https://github.com/Yian8068/motor-stubs.git"
 keywords = [
     "mongo",
-    "motor"
+    "motor",
+    "motor-stubs",
 ]
 
 [tool.poetry.dependencies]
