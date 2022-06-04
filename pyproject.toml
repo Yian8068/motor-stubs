@@ -2,12 +2,19 @@
 name = "motor-stubs"
 version = "1.2.2"
 description = ""
+readme = "README.md"
 authors = ["Daniel Hsiao <yian8068@yahoo.com.tw>"]
 packages = [
     { include = "motor-stubs" }
 ]
 include = [
-    "motor-stubs/**/*.pyi"
+    "README.md",
+    "CHANGELOG.md",
+]
+repository = "https://github.com/Yian8068/motor-stubs.git"
+keywords = [
+    "mongo",
+    "motor"
 ]
 
 [tool.poetry.dependencies]
