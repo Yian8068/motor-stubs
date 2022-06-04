@@ -1,3 +1,9 @@
+## 1.2.2 (2022-06-04)
+
+### Fix
+
+- make typevar more specific
+
 ## 1.2.1 (2022-06-04)
 
 ### Fix
