@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "motor-stubs"
-version = "1.1.0"
+version = "1.1.1"
 description = ""
 authors = ["Daniel Hsiao <yian8068@yahoo.com.tw>"]
 packages = [
@@ -18,7 +18,7 @@ pre-commit = "^2.19.0"
 motor = "^3.0.0"
 
 [tool.commitizen]
-version = "1.1.0"
+version = "1.1.1"
 version_files = [
     "pyproject.toml:version",
     "setup.py:version"
