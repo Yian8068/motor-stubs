@@ -1,3 +1,4 @@
+from asyncio import Future
 from typing import (
     Any,
     Iterable,
@@ -10,6 +11,7 @@ from typing import (
     Union,
     Dict,
     TypeVar,
+    Callable,
 )
 
 from bson.codec_options import CodecOptions
@@ -42,6 +44,8 @@ from pymongo.results import (
 from pymongo.typings import _CollationIn, _DocumentIn, _DocumentType, _Pipeline
 from pymongo.write_concern import WriteConcern
 
+from motor.metaprogramming import coroutine_annotation
+
 _FIND_AND_MODIFY_DOC_FIELDS = {"value": 1}
 
 _WriteOp = Union[InsertOne, DeleteOne, DeleteMany, ReplaceOne, UpdateOne, UpdateMany]
@@ -51,13 +55,61 @@ _IndexKeyHint = Union[str, _IndexList]
 _CodecDocumentType = TypeVar("_CodecDocumentType", bound=Mapping[str, Any])
 
 T = TypeVar('T')
+C = TypeVar('C')
+S = TypeVar('S')
 
 class AgnosticBase(object):
     def __init__(self, delegate: T) -> T: ...
 
 class AgnosticBaseProperties(AgnosticBase): ...
-class AgnosticBaseCursor(AgnosticBase): ...
-class AgnosticCursor(AgnosticBaseCursor): ...
+
+class AgnosticBaseCursor(AgnosticBase):
+    started: bool
+    closed: bool
+    collection: T
+
+    address: ...
+    cursor_id: ...
+    alive: ...
+    session: ...
+
+    def __init__(self, cursor: C, collection: T): ...
+    def __aiter__(self): ...
+    async def next(self) -> C: ...
+
+    __anext__ = next
+
+    @property
+    @coroutine_annotation
+    def fetch_next(self) -> Future[Any]: ...
+    def next_object(self): ...
+    def each(self, callback): ...
+    @coroutine_annotation
+    def to_list(self, length: int) -> Future[List]: ...
+    def get_io_loop(self): ...
+    async def close(self): ...
+    def batch_size(self: S, batch_size: int) -> S: ...
+
+class AgnosticCursor(AgnosticBaseCursor):
+    collation: Callable
+
+    add_option: Callable
+    remove_option: Callable
+    limit: Callable
+    skip: Callable
+    max_scan: Callable
+    sort: Callable
+    hint: Callable
+    where: Callable
+    max_await_time_ms: Callable
+    max_time_ms: Callable
+    min: Callable
+    max: Callable
+    comment: Callable
+    allow_disk_use: Callable
+
+    async def distinct(self): ...
+    async def explain(self): ...
 
 class AgnosticCollection:
     async def bulk_write(
@@ -238,7 +290,7 @@ class AgnosticCollection:
     async def list_indexes(
         self, session: Optional["ClientSession"] = None, comment: Optional[Any] = None
     ) -> CommandCursor[MutableMapping[str, Any]]: ...
-    async def find(self, *args: Any, **kwargs: Any) -> AgnosticCursor[_DocumentType]: ...
+    def find(self, *args: Any, **kwargs: Any) -> AgnosticCursor[_DocumentType]: ...
     def find_raw_batches(self, *args: Any, **kwargs: Any) -> RawBatchCursor[_DocumentType]: ...
     def watch(
         self,
