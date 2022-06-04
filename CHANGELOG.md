@@ -1,3 +1,9 @@
+## 1.2.1 (2022-06-04)
+
+### Fix
+
+- AgnosticCursor ChainingMethod
+
 ## 1.2.0 (2022-06-04)
 
 ### Feat
