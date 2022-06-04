@@ -41,3 +41,39 @@ It will output a file in folder `pyi_tmp/`.
 
 motor-stubs is experimental and is not an officially supported MongoDB product.
 For questions, discussions, or general technical support, visit the [MongoDB Community Forums](https://developer.mongodb.com/community/forums/tag/python).
+
+## Contribute
+
+### Poetry
+
+use `poetry` as package manager, you can follow the official installation guide [here](https://github.com/python-poetry/poetry)
+
+### Pre-Commit
+
+use Python package `pre-commit` for style check
+
+```shell
+# after install poetry
+
+# install project dependencies
+poetry install
+# then
+pre-commit install
+```
+
+### Commitizen
+
+use Python package `commitizen` for commit-msg lint and version bump tool
+
+#### commit
+
+```shell
+cz c
+# follow the description
+```
+
+#### bump version
+
+```shell
+cz bump
+```
