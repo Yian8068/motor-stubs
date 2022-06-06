@@ -125,8 +125,27 @@ class AgnosticClient(AgnosticBaseProperties):
         io_loop=None,
         **kwargs: Any,
     ): ...
+    def __getattr__(self, name: str) -> AgnosticDatabase: ...
+    def __getitem__(self, name: str) -> AgnosticDatabase: ...
+    def get_database(self) -> AgnosticDatabase: ...
+    def get_default_database(
+        self,
+        default: Optional[str] = None,
+        codec_options: Optional[CodecOptions] = None,
+        read_preference: Optional[_ServerMode] = None,
+        write_concern: Optional[WriteConcern] = None,
+        read_concern: Optional["ReadConcern"] = None,
+    ) -> AgnosticDatabase[_DocumentType]: ...
+    async def list_databases(
+        self,
+        session: Optional[ClientSession] = None,
+        comment: Optional[Any] = None,
+        **kwargs: Any,
+    ) -> CommandCursor[Dict[str, Any]]: ...
 
 class AgnosticDatabase(AgnosticBaseProperties):
+    def __getattr__(self, name: str) -> AgnosticCollection: ...
+    def __getitem__(self, name: str) -> AgnosticCollection: ...
     async def command(
         self,
         command: Union[str, MutableMapping[str, Any]],
@@ -191,6 +210,8 @@ class AgnosticCollection(AgnosticBaseProperties):
     full_name: ...
     database: AgnosticDatabase
 
+    def __getattr__(self, name: str) -> AgnosticCollection[_DocumentType]: ...
+    def __getitem__(self, name: str) -> AgnosticCollection[_DocumentType]: ...
     async def bulk_write(
         self,
         requests: Sequence[_WriteOp],
