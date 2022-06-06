@@ -1,3 +1,9 @@
+## 1.7.1 (2022-06-06)
+
+### Fix
+
+- return type of database AsyncIOMotorClient
+
 ## 1.7.0 (2022-06-06)
 
 ### Feat
