@@ -1,3 +1,9 @@
+## 1.5.0 (2022-06-06)
+
+### Feat
+
+- add partial AsyncIOMotorClient
+
 ## 1.4.0 (2022-06-04)
 
 ### Feat
