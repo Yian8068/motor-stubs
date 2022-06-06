@@ -12,9 +12,10 @@ from typing import (
     Dict,
     TypeVar,
     Callable,
+    Type,
 )
 
-from bson.codec_options import CodecOptions
+from bson.codec_options import CodecOptions, TypeRegistry
 from bson.dbref import DBRef
 from bson.timestamp import Timestamp
 from pymongo.client_session import ClientSession
@@ -111,6 +112,19 @@ class AgnosticCursor(AgnosticBaseCursor):
     def allow_disk_use(self: TSelf, *args, **kwargs) -> TSelf: ...
     async def distinct(self): ...
     async def explain(self): ...
+
+class AgnosticClient(AgnosticBaseProperties):
+    def __init__(
+        self,
+        host: Optional[Union[str, Sequence[str]]] = None,
+        port: Optional[int] = None,
+        document_class: Optional[Type[_DocumentType]] = None,
+        tz_aware: Optional[bool] = None,
+        connect: Optional[bool] = None,
+        type_registry: Optional[TypeRegistry] = None,
+        io_loop=None,
+        **kwargs: Any,
+    ): ...
 
 class AgnosticDatabase(AgnosticBaseProperties):
     async def command(
