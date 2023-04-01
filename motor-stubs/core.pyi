@@ -383,7 +383,7 @@ class AgnosticCollection(AgnosticBaseProperties):
         write_concern: Optional[WriteConcern] = None,
         read_concern: Optional["ReadConcern"] = None,
     ) -> "Collection[_DocumentType]": ...
-    async def aggregate(
+    def aggregate(
         self,
         pipeline: Sequence[Mapping[str, Any]],
         session: Optional["ClientSession"] = None,
@@ -394,7 +394,7 @@ class AgnosticCollection(AgnosticBaseProperties):
     async def aggregate_raw_batches(
         self, pipeline: Sequence[Mapping[str, Any]], session: Optional["ClientSession"] = None, comment: Optional[Any] = None, **kwargs: Any
     ) -> RawBatchCursor[_DocumentType]: ...
-    async def list_indexes(
+    def list_indexes(
         self, session: Optional["ClientSession"] = None, comment: Optional[Any] = None
     ) -> CommandCursor[MutableMapping[str, Any]]: ...
     def find(self, *args: Any, **kwargs: Any) -> AgnosticCursor[_DocumentType]: ...
