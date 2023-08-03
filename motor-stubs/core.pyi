@@ -239,7 +239,7 @@ class AgnosticCollection(AgnosticBaseProperties):
         **kwargs: Any,
     ) -> str: ...
     async def create_indexes(
-        self, indexes: IndexModel, session: Optional["ClientSession"] = None, comment: Optional[Any] = None, **kwargs: Any
+        self, indexes: List[IndexModel], session: Optional["ClientSession"] = None, comment: Optional[Any] = None, **kwargs: Any
     ) -> List[str]: ...
     async def delete_many(
         self,
